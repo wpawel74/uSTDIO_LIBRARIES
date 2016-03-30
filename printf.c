@@ -28,6 +28,7 @@
 */
 
 #include <stdarg.h>     // (...) parameter handling
+#include "defines.h"
 
 extern int putchar(int);
 /*
@@ -35,7 +36,7 @@ extern int putchar(int);
 | options
 +=============================================================================+
 */
-#define INCLUDE_FLOAT  // this enables float in printf() and costs you about 2kByte ROM
+//#define PRINTF_USE_FLOAT_FORMAT  // this enables float in printf() and costs you about 2kByte ROM
 
 /*
 +=============================================================================+
@@ -104,10 +105,10 @@ static void long_itoa (long val, int radix, int len, int (*putc) (int)){
 static int vfprintf(int (*putc)(int), const char* str,  va_list arp){
 	int d, r, w, s, l;  //d=char, r = radix, w = width, s=zeros, l=long
 	char *c;            // for the while loop only
-#ifdef INCLUDE_FLOAT
+#ifdef PRINTF_USE_FLOAT_FORMAT
 	float f;
 	long int m, mv, p, w2;
-#endif
+#endif // PRINTF_USE_FLOAT_FORMAT
 
 	while ((d = *str++) != 0) {
 		if (d != '%') {
@@ -129,7 +130,7 @@ static int vfprintf(int (*putc)(int), const char* str,  va_list arp){
 		}
 		if (s) w = -w;      //padd with zeros if negative
 
-#ifdef INCLUDE_FLOAT
+#ifdef PRINTF_USE_FLOAT_FORMAT
 		w2 = 2;            //default decimal places=2
 		if (d == '.'){
 			d = *str++; w2 = 0; }
@@ -137,7 +138,7 @@ static int vfprintf(int (*putc)(int), const char* str,  va_list arp){
 			w2 += w2 * 10 + (d - '0');
 			d = *str++;
 		}
-#endif
+#endif // PRINTF_USE_FLOAT_FORMAT
 
 		if (d == 's') {
 			c = va_arg(arp, char*);
@@ -163,7 +164,7 @@ static int vfprintf(int (*putc)(int), const char* str,  va_list arp){
 		else if (d == 'd' || d == 'i') {if (r==0) r = -10;}  //can be 16 or 32bit int
 		else if (d == 'X' || d == 'x') r = 16;               // 'x' added by mthomas
 		else if (d == 'b') r = 2;
-#ifdef INCLUDE_FLOAT
+#ifdef PRINTF_USE_FLOAT_FORMAT
 		else if (d == 'f' || d == 'F') {
 			f=va_arg(arp, double);
 			if (f >= 0.0) {
@@ -187,7 +188,7 @@ static int vfprintf(int (*putc)(int), const char* str,  va_list arp){
 			}
 			l=3; //do not continue with long
 		}
-#endif
+#endif // PRINTF_USE_FLOAT_FORMAT
 		else str--;                                         // normal character
 
 		if (r==0) continue;  //

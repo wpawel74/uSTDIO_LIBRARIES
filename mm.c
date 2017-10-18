@@ -23,10 +23,10 @@ static node *head=(node*)memory;	// Header node to hold the starting point
 /**
  * initialize the header on the 1st call
 */
-void initialize(int size) {
+static void heap_fixme(void) {
     //	checks for the 1st run
     if(!initialized) {
-        head->size = 50000 - sizeof(node);	// Total Available Space
+        head->size = MEMORY_POOL_SIZE - sizeof(node);	// Total Available Space
         head->isFree =1 ;
         head->next = NULL;
         initialized = 1;	//	set the value to 1, so this code won't run again
@@ -43,7 +43,7 @@ char* mm_malloc(int size) {
 
 	if(size <= 0) return NULL;	//	returns null if requested size is negative or zero
 
-	initialize(size);	//	If the first run of malloc
+	heap_fixme();	//	If the first run of malloc
 
     while(temp->next != NULL){
 		temp = temp->next;
